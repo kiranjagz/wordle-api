@@ -1,0 +1,39 @@
+## .NET
+bin/
+obj/
+out/
+publish/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+*~
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+## NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+## Test results
+TestResults/
+test-results/
+coverage/
+
+## Docker
+docker-compose.override.yml

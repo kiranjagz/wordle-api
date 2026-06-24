@@ -1,0 +1,11 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: WordleApi.Host/Dockerfile
+    ports:
+      - "5050:5050"
+    environment:
+      ConnectionStrings__Postgres: "${POSTGRES_CONNECTION:-Host=host.docker.internal;Port=5432;Database=wordleapi;Username=postgres;Password=admin}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

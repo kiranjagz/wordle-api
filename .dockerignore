@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+**/out/
+publish/
+.vs/
+.vscode/
+.idea/
+*.user
+.DS_Store
+.git/
+.gitignore
+WordleApi.Tests/
+WordleApi.IntegrationTests/
+docs/
+*.md
