@@ -22,15 +22,7 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "Wordle API",
-        Version = "v1",
-        Description = "A Wordle-like word guessing game with a REST API leaderboard"
-    });
-});
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddHealthChecks();
 

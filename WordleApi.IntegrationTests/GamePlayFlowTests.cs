@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -12,6 +14,12 @@ namespace WordleApi.IntegrationTests;
 
 public class GamePlayFlowTests : IAsyncLifetime
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        Converters = { new JsonStringEnumConverter() }
+    };
+
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
         .WithImage("postgres:16")
         .WithDatabase("wordleapi_test")
@@ -62,13 +70,13 @@ public class GamePlayFlowTests : IAsyncLifetime
         var createResponse = await _client.PostAsJsonAsync("/api/games", new { playerName = "integration-test" });
         Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
 
-        var game = await createResponse.Content.ReadFromJsonAsync<GameResponse>();
+        var game = await createResponse.Content.ReadFromJsonAsync<GameResponse>(JsonOptions);
         Assert.NotNull(game);
         Assert.Equal(GameStatus.InProgress, game.Status);
         Assert.Null(game.SecretWord);
 
         // Get game state
-        var getResponse = await _client.GetFromJsonAsync<GameResponse>($"/api/games/{game.GameId}");
+        var getResponse = await _client.GetFromJsonAsync<GameResponse>($"/api/games/{game.GameId}", JsonOptions);
         Assert.NotNull(getResponse);
         Assert.Equal("integration-test", getResponse.PlayerName);
 
@@ -78,7 +86,7 @@ public class GamePlayFlowTests : IAsyncLifetime
             new { word = "crane" });
         Assert.Equal(HttpStatusCode.OK, guessResponse.StatusCode);
 
-        var guessResult = await guessResponse.Content.ReadFromJsonAsync<GuessResult>();
+        var guessResult = await guessResponse.Content.ReadFromJsonAsync<GuessResult>(JsonOptions);
         Assert.NotNull(guessResult);
         Assert.Equal(1, guessResult.AttemptNumber);
         Assert.Equal(5, guessResult.Letters.Count);
@@ -92,7 +100,7 @@ public class GamePlayFlowTests : IAsyncLifetime
     public async Task SubmitGuess_InvalidWord_Returns400()
     {
         var createResponse = await _client.PostAsJsonAsync("/api/games", new { playerName = "test" });
-        var game = await createResponse.Content.ReadFromJsonAsync<GameResponse>();
+        var game = await createResponse.Content.ReadFromJsonAsync<GameResponse>(JsonOptions);
 
         var guessResponse = await _client.PostAsJsonAsync(
             $"/api/games/{game!.GameId}/guesses",
@@ -112,7 +120,7 @@ public class GamePlayFlowTests : IAsyncLifetime
     public async Task DeleteGame_RemovesGame()
     {
         var createResponse = await _client.PostAsJsonAsync("/api/games", new { playerName = "delete-test" });
-        var game = await createResponse.Content.ReadFromJsonAsync<GameResponse>();
+        var game = await createResponse.Content.ReadFromJsonAsync<GameResponse>(JsonOptions);
 
         var deleteResponse = await _client.DeleteAsync($"/api/games/{game!.GameId}");
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
