@@ -10,7 +10,9 @@ publish/
 
 ## IDE
 .vs/
-.vscode/
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
 .idea/
 *.swp
 *~
