@@ -73,6 +73,12 @@ GET /api/leaderboard?period=week&limit=10
 GET /api/leaderboard/players/kiran
 ```
 
+## Postman Collection
+
+Import the [Postman collection](docs/WordleApi.postman_collection.json) to get all endpoints pre-configured with variables and test scripts. The collection auto-saves the `gameId` after creating a game, so you can run requests in sequence.
+
+You can also access the collection in the [Postman workspace](https://www.postman.com/).
+
 ## API Endpoints
 
 | Method | Route | Description |
@@ -113,17 +119,23 @@ Triggered on version tags (`v*`) and manual dispatch:
 - Pushes to GitHub Container Registry (GHCR)
 - Tags: semver, short SHA, latest
 
+## Documentation
+
+- [Architecture](docs/architecture.md) — System overview, game flow, guess evaluation algorithm, database schema, CI/CD pipeline
+- [Postman Collection](docs/WordleApi.postman_collection.json) — Import into Postman for ready-to-use API requests
+
 ## Project Structure
 
 ```
 wordle-api/
-├── WordleApi.Host/          # ASP.NET Core Web API
-│   ├── Controllers/         # API endpoints
-│   ├── Data/                # Dapper repositories & migrations
-│   ├── Models/              # Entities & DTOs
-│   ├── Services/            # Game logic & word evaluation
-│   └── Resources/           # Word list
-├── WordleApi.Tests/         # Unit tests (xUnit + Moq)
+├── docs/                        # Architecture diagrams & Postman collection
+├── WordleApi.Host/              # ASP.NET Core Web API
+│   ├── Controllers/             # API endpoints
+│   ├── Data/                    # Dapper repositories & migrations
+│   ├── Models/                  # Entities & DTOs
+│   ├── Services/                # Game logic & word evaluation
+│   └── Resources/               # Word list
+├── WordleApi.Tests/             # Unit tests (xUnit + Moq)
 └── WordleApi.IntegrationTests/  # Integration tests (Testcontainers)
 ```
 

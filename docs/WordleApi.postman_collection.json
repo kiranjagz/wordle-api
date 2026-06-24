@@ -1,0 +1,204 @@
+{
+  "info": {
+    "name": "Wordle API",
+    "description": "A Wordle-like word guessing game REST API with PostgreSQL leaderboard.\n\nBase URL: http://localhost:5050\n\nGame flow:\n1. Create a game (POST /api/games)\n2. Submit guesses (POST /api/games/{gameId}/guesses) — up to 6 attempts\n3. Check leaderboard (GET /api/leaderboard)\n\nScoring: score = max(0, 1000 - (attempts-1)*150 - floor(seconds/10))",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5050",
+      "description": "Base URL for the Wordle API"
+    },
+    {
+      "key": "gameId",
+      "value": "",
+      "description": "Game ID — set automatically after creating a game"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the API is running and healthy."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Games",
+      "description": "Game session management — create, play, and abandon games.",
+      "item": [
+        {
+          "name": "Create Game",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.gameId) {",
+                  "    pm.collectionVariables.set('gameId', response.gameId);",
+                  "    console.log('Game ID saved: ' + response.gameId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"playerName\": \"kiran\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/games",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "games"]
+            },
+            "description": "Start a new game session. The secret word is hidden until the game ends."
+          }
+        },
+        {
+          "name": "Get Game",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/games/{{gameId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "games", "{{gameId}}"]
+            },
+            "description": "Get the current state of a game. The secret word is only revealed after the game is won or lost."
+          }
+        },
+        {
+          "name": "Submit Guess",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "console.log('Status: ' + response.gameStatus);",
+                  "console.log('Attempts remaining: ' + response.attemptsRemaining);",
+                  "",
+                  "if (response.letters) {",
+                  "    response.letters.forEach(l => {",
+                  "        let emoji = l.result === 'Correct' ? '🟩' : l.result === 'Present' ? '🟨' : '⬜';",
+                  "        console.log(emoji + ' ' + l.letter.toUpperCase());",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"crane\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/games/{{gameId}}/guesses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "games", "{{gameId}}", "guesses"]
+            },
+            "description": "Submit a 5-letter word guess. Returns letter-by-letter feedback:\n- Correct — Right letter, right position\n- Present — Right letter, wrong position\n- Absent — Letter not in the word"
+          }
+        },
+        {
+          "name": "Abandon Game",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/games/{{gameId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "games", "{{gameId}}"]
+            },
+            "description": "Abandon an in-progress game. This permanently deletes the game and its guesses."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leaderboard",
+      "description": "Leaderboard and player statistics.",
+      "item": [
+        {
+          "name": "Get Top Scores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/leaderboard?period=all&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leaderboard"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "all",
+                  "description": "Filter by time period: day, week, month, or all"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of results to return (1-100)"
+                }
+              ]
+            },
+            "description": "Get the top scores on the leaderboard, optionally filtered by time period."
+          }
+        },
+        {
+          "name": "Get Player Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/leaderboard/players/kiran",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leaderboard", "players", "kiran"]
+            },
+            "description": "Get a player's stats including games played, win rate, average attempts, streaks, and best score."
+          }
+        }
+      ]
+    }
+  ]
+}
