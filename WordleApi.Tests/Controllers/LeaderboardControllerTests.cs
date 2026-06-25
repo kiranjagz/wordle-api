@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using WordleApi.Host.Controllers;
 using WordleApi.Host.Data;
@@ -14,7 +15,7 @@ public class LeaderboardControllerTests
 
     public LeaderboardControllerTests()
     {
-        _sut = new LeaderboardController(_repo.Object);
+        _sut = new LeaderboardController(_repo.Object, Mock.Of<ILogger<LeaderboardController>>());
     }
 
     [Fact]
