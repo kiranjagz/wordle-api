@@ -1,9 +1,10 @@
 # Wordle API
 
-A Wordle-like word guessing game exposed as a REST API, with a PostgreSQL-backed leaderboard. Built to showcase GitHub Actions CI/CD and Docker-ready deployments.
+A Wordle-like word guessing game with a React frontend and REST API backend, featuring a PostgreSQL-backed leaderboard. Built to showcase GitHub Actions CI/CD and Docker-ready deployments.
 
 ## Tech Stack
 
+- **React + TypeScript** — Frontend (Vite)
 - **.NET 10** — ASP.NET Core Web API
 - **PostgreSQL** — Data storage
 - **Dapper** — Micro-ORM
@@ -15,6 +16,7 @@ A Wordle-like word guessing game exposed as a REST API, with a PostgreSQL-backed
 ### Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Node.js 22+](https://nodejs.org/) (for the frontend)
 - [Docker](https://docs.docker.com/get-docker/) (for containerized runs)
 - PostgreSQL (local or via Docker)
 
@@ -24,17 +26,27 @@ A Wordle-like word guessing game exposed as a REST API, with a PostgreSQL-backed
 docker compose -f docker-compose.yml -f docker-compose.postgres.yml up --build
 ```
 
-The API will be available at `http://localhost:5050/swagger`.
+- **UI** — `http://localhost:3000`
+- **API / Swagger** — `http://localhost:5050/swagger`
 
-### Run locally
+### Run locally (development)
 
 1. Start a PostgreSQL instance (or use `docker compose -f docker-compose.postgres.yml up postgres`)
-2. Update the connection string in `appsettings.Development.json` if needed
-3. Run the API:
+2. Start the API:
 
 ```bash
 dotnet run --project WordleApi.Host
 ```
+
+3. Start the UI (in a separate terminal):
+
+```bash
+cd wordle-ui
+npm install
+npm run dev
+```
+
+The UI will be available at `http://localhost:5173` and proxies API requests to the backend.
 
 ## How to Play
 
@@ -128,6 +140,9 @@ Triggered on version tags (`v*`) and manual dispatch:
 
 ```
 wordle-api/
+├── wordle-ui/                   # React frontend (Vite + TypeScript)
+│   ├── src/components/          # GameBoard, Keyboard, Leaderboard, Header
+│   └── Dockerfile               # Nginx-based production image
 ├── docs/                        # Architecture diagrams & Postman collection
 ├── WordleApi.Host/              # ASP.NET Core Web API
 │   ├── Controllers/             # API endpoints

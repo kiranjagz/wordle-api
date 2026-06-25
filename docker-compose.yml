@@ -9,3 +9,12 @@ services:
       ConnectionStrings__Postgres: "${POSTGRES_CONNECTION:-Host=host.docker.internal;Port=5432;Database=wordleapi;Username=postgres;Password=admin}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  ui:
+    build:
+      context: ./wordle-ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
