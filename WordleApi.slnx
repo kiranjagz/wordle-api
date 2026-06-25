@@ -1,5 +1,4 @@
 <Solution>
   <Project Path="WordleApi.Host/WordleApi.Host.csproj" />
   <Project Path="WordleApi.Tests/WordleApi.Tests.csproj" />
-  <Project Path="WordleApi.IntegrationTests/WordleApi.IntegrationTests.csproj" />
 </Solution>

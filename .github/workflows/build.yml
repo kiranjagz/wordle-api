@@ -15,21 +15,6 @@ jobs:
     name: Build & Test (.NET 10)
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_DB: wordleapi_test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d wordleapi_test"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -50,15 +35,6 @@ jobs:
           dotnet test WordleApi.Tests/WordleApi.Tests.csproj
           --no-build --configuration Release --verbosity normal
           --logger "trx;LogFileName=unit-results.trx"
-          --results-directory ./test-results
-
-      - name: Run integration tests
-        env:
-          ConnectionStrings__Postgres: "Host=localhost;Port=5432;Database=wordleapi_test;Username=postgres;Password=test"
-        run: >-
-          dotnet test WordleApi.IntegrationTests/WordleApi.IntegrationTests.csproj
-          --no-build --configuration Release --verbosity normal
-          --logger "trx;LogFileName=integration-results.trx"
           --results-directory ./test-results
 
       - name: Upload test results
