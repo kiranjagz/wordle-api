@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using WordleApi.Host.Controllers;
 using WordleApi.Host.Models;
@@ -14,7 +15,7 @@ public class GamesControllerTests
 
     public GamesControllerTests()
     {
-        _sut = new GamesController(_gameService.Object);
+        _sut = new GamesController(_gameService.Object, Mock.Of<ILogger<GamesController>>());
     }
 
     [Fact]

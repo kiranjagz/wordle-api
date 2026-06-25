@@ -19,6 +19,25 @@
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
         "uriFormat": "%s/swagger"
       }
+    },
+    {
+      "name": "wordle-ui",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}/wordle-ui",
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Local:\\s+(https?://\\S+)"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack",
+      "configurations": ["WordleApi.Host", "wordle-ui"]
     }
   ]
 }

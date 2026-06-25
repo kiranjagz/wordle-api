@@ -9,10 +9,12 @@ namespace WordleApi.Host.Controllers;
 public class LeaderboardController : ControllerBase
 {
     private readonly ILeaderboardRepository _leaderboardRepository;
+    private readonly ILogger<LeaderboardController> _logger;
 
-    public LeaderboardController(ILeaderboardRepository leaderboardRepository)
+    public LeaderboardController(ILeaderboardRepository leaderboardRepository, ILogger<LeaderboardController> logger)
     {
         _leaderboardRepository = leaderboardRepository;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -25,7 +27,9 @@ public class LeaderboardController : ControllerBase
         if (limit is < 1 or > 100)
             limit = 10;
 
+        _logger.LogInformation("Fetching top {Limit} scores for period {Period}", limit, period);
         var entries = await _leaderboardRepository.GetTopScoresAsync(period, limit, ct);
+        _logger.LogInformation("Returned {Count} leaderboard entries for period {Period}", entries.Count(), period);
         return Ok(entries);
     }
 
@@ -34,9 +38,13 @@ public class LeaderboardController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPlayerStats(string name, CancellationToken ct)
     {
+        _logger.LogInformation("Fetching stats for player {PlayerName}", name);
         var stats = await _leaderboardRepository.GetPlayerStatsAsync(name, ct);
         if (stats is null)
+        {
+            _logger.LogWarning("Player {PlayerName} not found", name);
             return NotFound();
+        }
 
         return Ok(stats);
     }
