@@ -120,14 +120,13 @@ score = max(0, 1000 - (attempts - 1) × 150 - floor(seconds / 10))
 ### Build & Test (`build.yml`)
 
 Runs on every push and PR to `main`:
-- Restore → Build → Unit Tests → Integration Tests
-- Uses a PostgreSQL service container for integration tests
+- Restore → Build → Unit Tests
 - Uploads test results and published artifacts
 
 ### Publish Images (`publish-images.yml`)
 
 Triggered on version tags (`v*`) and manual dispatch:
-- Builds a multi-stage Docker image
+- Builds multi-stage Docker images for both **API** and **UI**
 - Pushes to GitHub Container Registry (GHCR)
 - Tags: semver, short SHA, latest
 
@@ -150,16 +149,11 @@ wordle-api/
 │   ├── Models/                  # Entities & DTOs
 │   ├── Services/                # Game logic & word evaluation
 │   └── Resources/               # Word list
-├── WordleApi.Tests/             # Unit tests (xUnit + Moq)
-└── WordleApi.IntegrationTests/  # Integration tests (Testcontainers)
+└── WordleApi.Tests/             # Unit tests (xUnit + Moq)
 ```
 
 ## Running Tests
 
 ```bash
-# Unit tests
 dotnet test WordleApi.Tests
-
-# Integration tests (requires Docker for Testcontainers)
-dotnet test WordleApi.IntegrationTests
 ```

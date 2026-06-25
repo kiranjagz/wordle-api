@@ -18,7 +18,21 @@ updates:
         patterns:
           - "*"
 
+  - package-ecosystem: "npm"
+    directory: "/wordle-ui"
+    schedule:
+      interval: "weekly"
+    groups:
+      npm-all:
+        patterns:
+          - "*"
+
   - package-ecosystem: "docker"
     directory: "/WordleApi.Host"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker"
+    directory: "/wordle-ui"
     schedule:
       interval: "weekly"

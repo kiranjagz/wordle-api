@@ -158,23 +158,38 @@ Push/PR to main                    Tag v*
 │  Restore     │           │  Checkout        │
 │  Build       │           │  Login to GHCR   │
 │  Unit Tests  │           │  Derive tags     │
-│  Integration │           │  Docker Buildx   │
-│    Tests     │           │  Build & Push    │
-│  Publish     │           │    (linux/amd64) │
-│  Artifacts   │           │                  │
+│  Publish     │           │  Docker Buildx   │
+│  Artifacts   │           │  Build & Push    │
+│              │           │   • API image    │
+│              │           │   • UI image     │
+│              │           │    (linux/amd64) │
 └──────────────┘           └──────────────────┘
 ```
 
 ## Docker Deployment
 
 ```bash
-# Full stack (API + Postgres)
+# Full stack (UI + API + Postgres)
 docker compose -f docker-compose.yml -f docker-compose.postgres.yml up --build
 
 # API only (connect to external Postgres)
 POSTGRES_CONNECTION="Host=...;..." docker compose up --build
 ```
 
-The Dockerfile uses a multi-stage build:
+### Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| `ui` | 3000 | React frontend (nginx) — proxies `/api` to the API service |
+| `api` | 5050 | .NET Web API + Swagger |
+| `postgres` | 5433 | PostgreSQL 16 (via docker-compose.postgres.yml) |
+
+### Dockerfiles
+
+**WordleApi.Host/Dockerfile** (API) — multi-stage build:
 1. **Build stage** — SDK image, restore, publish
 2. **Runtime stage** — ASP.NET runtime image only (~220MB)
+
+**wordle-ui/Dockerfile** (UI) — multi-stage build:
+1. **Build stage** — Node 22, `npm ci`, `npm run build`
+2. **Runtime stage** — nginx:alpine serving static files with API reverse proxy
