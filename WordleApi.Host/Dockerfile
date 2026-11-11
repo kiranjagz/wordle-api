@@ -2,7 +2,7 @@
 # Build context is the repository root: docker build -f WordleApi.Host/Dockerfile .
 
 # ── Build ────────────────────────────────────────────────────────────────
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 
 COPY WordleApi.Host/WordleApi.Host.csproj WordleApi.Host/
